@@ -23,23 +23,26 @@ OverlayLabels(
 
   using TImage     = itk::Image< TPixel, Dimension >;
   using TReader    = itk::ImageFileReader< TImage >;
-  using TWriter    = itk::ImageFileWriter< TImage >;
-
-  const auto iReader = TReader::New();
-  const auto lReader = TReader::New();
-  iReader->SetFileName( IImage );
-  lReader->SetFileName( LImage );
 
   using TLabel = TPixel;
   using TLabelObject = itk::LabelObject< TLabel, Dimension >;
   using TLabelMap = itk::LabelMap< TLabelObject >;
 
   using TConverter = itk::LabelImageToLabelMapFilter< TImage, TLabelMap >;
-  ConverterType::Pointer converter = TConverter::New();
+  using TFilter = itk::LabelMapOverlayImageFilter< TLabelMap, TImage >;
+
+  using TImageOutput = typename TFilter::OutputImageType;
+  using TWriter    = itk::ImageFileWriter< TImageOutput >;
+
+  const auto iReader = TReader::New();
+  const auto lReader = TReader::New();
+  iReader->SetFileName( IImage );
+  lReader->SetFileName( LImage );
+
+  const auto converter = TConverter::New();
   converter->SetInput( lReader->GetOutput() );
 
-  using TFilter = itk::LabelMapOverlayImageFilter< TLabelMap, TImage >;
-  FilterType::Pointer filter = TFilter::New();
+  const auto filter = TFilter::New();
   filter->SetInput( converter->GetOutput() );
   filter->SetFeatureImage( iReader->GetOutput() );
   filter->SetOpacity( 0.5 );

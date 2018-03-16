@@ -306,6 +306,15 @@ target_link_libraries(${EXNAME}
                       ${Boost_FILESYSTEM_LIBRARY}
                       ${Boost_SYSTEM_LIBRARY}
                     )
+set(EXNAME "dv-overlay-labels")
+add_executable(${EXNAME} ${EXNAME}.cxx)
+target_link_libraries(${EXNAME}
+                      ${ITK_LIBRARIES}
+                      dv-commandline-utils-lib
+                      ${Boost_PROGRAM_OPTIONS_LIBRARY}
+                      ${Boost_FILESYSTEM_LIBRARY}
+                      ${Boost_SYSTEM_LIBRARY}
+                    )
 
 ##
 ## Utilities depending upon CPD

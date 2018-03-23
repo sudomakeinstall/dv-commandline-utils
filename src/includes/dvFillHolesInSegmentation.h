@@ -2,9 +2,13 @@
 #define dv_FillHolesInSegmentation_h
 
 #include <itkImageFileReader.h>
+#include <itkBinaryThresholdImageFilter.h>
 #include <itkBinaryFillholeImageFilter.h>
 #include <itkImageFileWriter.h>
 #include <itkMaskImageFilter.h>
+
+
+#include <dvImageToSet.h>
 
 namespace dv
 {
@@ -15,7 +19,9 @@ namespace dv
   {
     using TImage  = itk::Image< TPixel, Dimension >;
     using TReader = itk::ImageFileReader< TImage >;
-    using TFilter = itk::BinaryFillholeImageFilter< TImage, TImage >;
+    using TFilter = itk::BinaryFillholeImageFilter< TImage >;
+    using TThresh = itk::BinaryThresholdImageFilter< TImage, TImage >;
+    using TMask   = itk::MaskImageFilter< TImage, TImage >;
     using TWriter = itk::ImageFileWriter< TImage >;
 
     auto input = TImage::New();
@@ -51,12 +57,12 @@ namespace dv
       mask->SetInput( input );
       mask->SetMaskImage( filter->GetOutput() );
       mask->SetMaskingValue( s );
+      mask->SetOutsideValue( s );
       mask->Update();
 
       // Replace the input
       input->Graft( mask->GetOutput() );
       input->DisconnectPipeline();
-
 
     }
 

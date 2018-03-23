@@ -5,7 +5,7 @@ namespace po = boost::program_options;
 
 // Custom
 #include <dvReadImageIOBase.h>
-#include <dvFillHolesInBSegmentation.h>
+#include <dvFillHolesInSegmentation.h>
 
 int main( int argc, char** argv )
 {

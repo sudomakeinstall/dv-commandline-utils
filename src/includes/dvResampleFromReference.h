@@ -7,6 +7,10 @@
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
+#include <itkNearestNeighborInterpolateImageFunction.h>
+#include <itkLinearInterpolateImageFunction.h>
+#include <itkBSplineInterpolateImageFunction.h>
+
 namespace dv
 {
 
@@ -20,7 +24,8 @@ ResampleFromReference(
   const bool OutputSizeExists,
   const unsigned int OutputSize,
   const bool OutputSpacingExists,
-  const double OutputSpacing
+  const double OutputSpacing,
+  const unsigned int &interpolator
 )
 {
 
@@ -29,6 +34,11 @@ ResampleFromReference(
   using TWriter    = itk::ImageFileWriter< TImage >;
   using TTransform = itk::IdentityTransform< double, Dimension >;
   using TResample  = itk::ResampleImageFilter< TImage, TImage >;
+
+  using NNInterpolateType = itk::NearestNeighborInterpolateImageFunction< TImage >;
+  using LNInterpolateType = itk::LinearInterpolateImageFunction< TImage >;
+  using BSInterpolateType = itk::BSplineInterpolateImageFunction< TImage >;
+
 
   const auto iReader = TReader::New();
   const auto rReader = TReader::New();
@@ -84,6 +94,28 @@ ResampleFromReference(
     }
 
   resample->SetOutputDirection( ReferenceDirection );
+  switch ( interpolator )
+    {
+    case 0:
+      {
+      const auto interp = NNInterpolateType::New();
+      resample->SetInterpolator( interp );
+      break;
+      }
+    case 1:
+      {
+      const auto interp = LNInterpolateType::New();
+      resample->SetInterpolator( interp );
+      break;
+      }
+    default:
+      {
+      const auto interp = BSInterpolateType::New();
+      interp->SetSplineOrder( interpolator );
+      resample->SetInterpolator( interp );
+      break;
+      }
+    }
 
   const auto writer = TWriter::New();
   writer->SetInput( resample->GetOutput() );

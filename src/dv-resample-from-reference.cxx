@@ -21,7 +21,8 @@ main( int argc, char* argv[] )
     ("output-size",     po::value<unsigned int>(), "Output image size in pixels.")
     ("output-spacing",  po::value<double>(), "Output pixel size in mm.")
     ("outside-value",  po::value<double>()->default_value(0.0), "Outside value.")
-  ;
+    ("interpolator", po::value<unsigned int>()->default_value(1), "Order of BSpline interpolation (0 to 5 allowed).")
+;
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, description), vm);
@@ -37,6 +38,7 @@ main( int argc, char* argv[] )
   const auto IImage(vm["input-image"].as<std::string>());
   const auto RImage(vm["reference-image"].as<std::string>());
   const auto OImage(vm["output-image"].as<std::string>());
+  const unsigned int interpolator = vm["interpolator"].as<unsigned int>();
 
   const bool output_size_exists = vm.count("output-size");
   const auto OutputSize = output_size_exists ? vm["output-size"].as<unsigned int>() : -1;
@@ -57,7 +59,7 @@ main( int argc, char* argv[] )
         output_size_exists,
         OutputSize,
         output_spacing_exists,
-        OutputSpacing
+        OutputSpacing, interpolator
                                                  );
       break;
     case itk::ImageIOBase::CHAR:
@@ -69,7 +71,7 @@ main( int argc, char* argv[] )
         output_size_exists,
         OutputSize,
         output_spacing_exists,
-        OutputSpacing
+        OutputSpacing, interpolator
                                                  );
       break;
     case itk::ImageIOBase::USHORT:
@@ -81,7 +83,7 @@ main( int argc, char* argv[] )
         output_size_exists,
         OutputSize,
         output_spacing_exists,
-        OutputSpacing
+        OutputSpacing, interpolator
                                                  );
       break;
     case itk::ImageIOBase::SHORT:
@@ -93,7 +95,7 @@ main( int argc, char* argv[] )
         output_size_exists,
         OutputSize,
         output_spacing_exists,
-        OutputSpacing
+        OutputSpacing, interpolator
                                                  );
       break;
     case itk::ImageIOBase::UINT:
@@ -105,7 +107,7 @@ main( int argc, char* argv[] )
         output_size_exists,
         OutputSize,
         output_spacing_exists,
-        OutputSpacing
+        OutputSpacing, interpolator
                                                  );
       break;
     case itk::ImageIOBase::INT:
@@ -117,7 +119,7 @@ main( int argc, char* argv[] )
         output_size_exists,
         OutputSize,
         output_spacing_exists,
-        OutputSpacing
+        OutputSpacing, interpolator
                                                  );
       break;
     case itk::ImageIOBase::ULONG:
@@ -129,7 +131,7 @@ main( int argc, char* argv[] )
         output_size_exists,
         OutputSize,
         output_spacing_exists,
-        OutputSpacing
+        OutputSpacing, interpolator
                                                  );
       break;
     case itk::ImageIOBase::LONG:
@@ -141,7 +143,7 @@ main( int argc, char* argv[] )
         output_size_exists,
         OutputSize,
         output_spacing_exists,
-        OutputSpacing
+        OutputSpacing, interpolator
                                                  );
       break;
     case itk::ImageIOBase::FLOAT:
@@ -153,7 +155,7 @@ main( int argc, char* argv[] )
         output_size_exists,
         OutputSize,
         output_spacing_exists,
-        OutputSpacing
+        OutputSpacing, interpolator
                                                  );
       break;
     case itk::ImageIOBase::DOUBLE:
@@ -165,7 +167,7 @@ main( int argc, char* argv[] )
         output_size_exists,
         OutputSize,
         output_spacing_exists,
-        OutputSpacing
+        OutputSpacing, interpolator
                                                  );
       break;
     default:

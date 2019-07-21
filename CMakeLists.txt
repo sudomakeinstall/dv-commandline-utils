@@ -119,6 +119,7 @@ set(EXNAMES "dv-label-geometry"
             "dv-tile-images"
             "dv-window-image"
             "dv-overlay-labels"
+            "dv-decimate-mesh-with-materials"
    )
 
 foreach(EXNAME ${EXNAMES})

@@ -31,7 +31,7 @@ include(DVPreventInBuildInstalls)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -pg" CACHE STRING "cxx debug compiler flags" FORCE)
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra" CACHE STRING "cxx debug compiler flags" FORCE)
 
 ################################
 ## Utilities Depending on ITK ##
@@ -121,6 +121,7 @@ set(EXNAMES "dv-label-geometry"
             "dv-window-image"
             "dv-overlay-labels"
             "dv-generate-initial-model"
+            "dv-label-mesh"
    )
 
 foreach(EXNAME ${EXNAMES})

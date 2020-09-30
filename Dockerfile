@@ -18,6 +18,7 @@ RUN apt-get update \
   libgflags-dev \
   libsuitesparse-dev \
   libceres-dev \
+  make \
   cmake \
   cmake-curses-gui \
   coreutils \

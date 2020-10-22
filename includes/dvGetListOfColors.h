@@ -1,6 +1,7 @@
 #ifndef dv_GetListOfColors_h
 #define dv_GetListOfColors_h
 
+#include <cstdlib>
 #include <array>
 #include <vector>
 

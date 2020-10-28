@@ -29,6 +29,8 @@ GenerateInitialModelImageToMeshFilter<TInputImage, TOutputMesh>
 ::GenerateInitialModelImageToMeshFilter()
 {
   this->SetNumberOfRequiredInputs(1);
+  this->m_LVClosingRadius = 3;
+  this->m_GeneralClosingRadius = 3;
 }
 
 template <typename TInputImage, typename TOutputMesh>
@@ -71,8 +73,33 @@ GenerateInitialModelImageToMeshFilter<TInputImage, TOutputMesh>
   using TLoop = itk::LoopTriangleCellSubdivisionQuadEdgeMeshFilter<OutputMeshType>;
   using TRefine = itk::RefineValenceThreeVerticesQuadEdgeMeshFilter<OutputMeshType>;
 
+  TKernel closeKernel;
+  closeKernel.SetRadius(this->GetGeneralClosingRadius());
+  closeKernel.CreateStructuringElement();
+
+  std::array<typename TClose::Pointer, 8> closing;
+  for (size_t i = 0; i < 8; ++i) {
+    closing[i] = TClose::New();
+    closing[i]->SetKernel(closeKernel);
+    closing[i]->SetForegroundValue( i + 2 );
+    if (i > 0) {
+      closing[i]->SetInput( closing[i - 1]->GetOutput() );
+    } else {
+      closing[i]->SetInput( image );
+    }
+  }
+
+  TKernel lvCloseKernel;
+  lvCloseKernel.SetRadius(this->GetLVClosingRadius());
+  lvCloseKernel.CreateStructuringElement();
+
+  const auto closing_lv = TClose::New();
+  closing_lv->SetInput( closing.back()->GetOutput() );
+  closing_lv->SetKernel( lvCloseKernel );
+  closing_lv->SetForegroundValue( 1 );
+
   const auto enforce0 = TEnforce::New();
-  enforce0->SetInput( image );
+  enforce0->SetInput( closing_lv->GetOutput() );
   enforce0->SetLabels1({4, 5});
   enforce0->SetLabels2({2, 3, 6, 7, 8, 9});
 
@@ -81,61 +108,51 @@ GenerateInitialModelImageToMeshFilter<TInputImage, TOutputMesh>
   enforce1->SetLabels1({3});
   enforce1->SetLabels2({1, 6, 7, 8, 9});
 
-  TKernel closeKernel;
-  closeKernel.SetRadius(this->GetLVClosingRadius());
-  closeKernel.CreateStructuringElement();
-
-  const auto closing_lv = TClose::New();
-  closing_lv->SetInput( enforce1->GetOutput() );
-  closing_lv->SetKernel( closeKernel );
-  closing_lv->SetForegroundValue( 1 );
-
   const auto connected = TConnected::New();
-  connected->SetInput( closing_lv->GetOutput() );
-
-  const auto fill = TFill::New();
-  fill->SetInput( connected->GetOutput() );
+  connected->SetInput( enforce1->GetOutput() );
 
   typename InputImageType::SizeType padding;
   padding.Fill(1);
 
   const auto pad = TPad::New();
-  pad->SetInput(fill->GetOutput());
+  pad->SetInput(connected->GetOutput());
   pad->SetPadUpperBound(padding);
   pad->SetPadLowerBound(padding);
   pad->SetConstant(static_cast<InputPixelType>(0));
 
   const auto cuberille = TCuberille::New();
-  cuberille->SetInput( pad->GetOutput() );
+  cuberille->SetInput(pad->GetOutput());
   cuberille->GenerateTriangleFacesOn();
   cuberille->ProjectVerticesToIsoSurfaceOff();
   cuberille->SavePixelAsCellDataOn();
 
-  const auto noise = TNoise::New();
-  noise->SetInput(cuberille->GetOutput());
-  noise->SetSigma(this->GetMeshNoiseSigma());
-  noise->SetSeed( 0 );
-
-  const auto criterion = TCriterion::New();
-
-  criterion->SetTopologicalChange(false);
-  criterion->SetNumberOfElements(this->GetNumberOfCellsInDecimatedMesh());
-
-  const auto decimate = TDecimation::New();
-  decimate->SetInput(noise->GetOutput());
-  decimate->SetCriterion(criterion);
-
-  const auto delaunay = TDelaunay::New();
-  delaunay->SetInput( decimate->GetOutput() );
-
-  const auto refine = TRefine::New();
-  refine->SetInput( decimate->GetOutput() );
-
-  const auto loop = TLoop::New();
-  loop->SetInput( refine->GetOutput() );
-  loop->Update();
-
-  mesh->Graft( loop->GetOutput() );
+//  const auto noise = TNoise::New();
+//  noise->SetInput(cuberille->GetOutput());
+//  noise->SetSigma(this->GetMeshNoiseSigma());
+//  noise->SetSeed( 0 );
+//
+//  const auto criterion = TCriterion::New();
+//
+//  criterion->SetTopologicalChange(false);
+//  criterion->SetNumberOfElements(this->GetNumberOfCellsInDecimatedMesh());
+//
+//  const auto decimate = TDecimation::New();
+//  decimate->SetInput(noise->GetOutput());
+//  decimate->SetCriterion(criterion);
+//
+//  const auto delaunay = TDelaunay::New();
+//  delaunay->SetInput( decimate->GetOutput() );
+//
+//  const auto refine = TRefine::New();
+//  refine->SetInput( decimate->GetOutput() );
+//
+//  const auto loop = TLoop::New();
+//  loop->SetInput( refine->GetOutput() );
+//  loop->Update();
+//
+//  mesh->Graft( loop->GetOutput() );
+  cuberille->Update();
+  mesh->Graft( cuberille->GetOutput() );
 
 }
 

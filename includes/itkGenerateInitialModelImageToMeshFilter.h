@@ -43,6 +43,9 @@ public:
   virtual void
   SetInput(const InputImageType * inputImage);
 
+  itkSetMacro(GeneralClosingRadius, unsigned int);
+  itkGetMacro(GeneralClosingRadius, unsigned int);
+
   itkSetMacro(LVClosingRadius, unsigned int);
   itkGetMacro(LVClosingRadius, unsigned int);
 
@@ -68,6 +71,7 @@ private:
   // itkConceptMacro( FloatingPointPixel, ( itk::Concept::IsFloatingPoint< typename InputImageType::PixelType > ) );
 #endif
 
+  unsigned int m_GeneralClosingRadius;
   unsigned int m_LVClosingRadius;
   float        m_MeshNoiseSigma;
   unsigned int m_NumberOfCellsInDecimatedMesh;

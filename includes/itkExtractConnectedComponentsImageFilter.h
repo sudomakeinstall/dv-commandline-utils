@@ -46,6 +46,10 @@ public:
   itkSetMacro(N, unsigned int);
   itkGetMacro(N, unsigned int);
 
+  /** Seg/Get Background. */
+  itkSetMacro(Background, OutputPixelType);
+  itkGetMacro(Background, OutputPixelType);
+
 protected:
   ExtractConnectedComponentsImageFilter();
   ~ExtractConnectedComponentsImageFilter() override = default;
@@ -63,6 +67,7 @@ private:
 #endif
 
   unsigned int m_N;
+  OutputPixelType m_Background;
 };
 } // namespace itk
 

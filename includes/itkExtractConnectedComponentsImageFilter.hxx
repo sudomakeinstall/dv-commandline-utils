@@ -20,6 +20,7 @@ ExtractConnectedComponentsImageFilter<TInputImage, TOutputImage>
 ::ExtractConnectedComponentsImageFilter()
 {
   this->m_N = 1;
+  this->m_Background = 0;
 }
 
 
@@ -46,13 +47,13 @@ ExtractConnectedComponentsImageFilter<TInputImage, TOutputImage>
   const InputImageType * input = this->GetInput();
   OutputImageType *      output = this->GetOutput();
 
-  output->Graft( input );
-
   const auto labels_set = dv::ImageToSet<InputImageDimension, InputPixelType>(input);
+
+  output->Graft( input );
 
   for (const auto& s : labels_set) {
     // Ignore background.
-    if (0 == s)
+    if (this->m_Background == s)
       continue;
 
     // Extract Label:
@@ -60,7 +61,7 @@ ExtractConnectedComponentsImageFilter<TInputImage, TOutputImage>
     thresh->SetInput(output);
     thresh->SetLowerThreshold(s);
     thresh->SetUpperThreshold(s);
-    thresh->SetInsideValue(s);
+    thresh->SetInsideValue(1);
     thresh->SetOutsideValue(0);
 
     // Connected Components:
@@ -75,7 +76,7 @@ ExtractConnectedComponentsImageFilter<TInputImage, TOutputImage>
     if (NumObjects <= this->GetN())
       continue;
 
-    // Keep (ObjectCount - 1) smallest components.
+    // Keep (ObjectCount - N) smallest components.
     const auto keep = TKeep::New();
     keep->SetInput(connected->GetOutput());
     keep->SetBackgroundValue(0);
@@ -83,7 +84,7 @@ ExtractConnectedComponentsImageFilter<TInputImage, TOutputImage>
     keep->SetAttribute(TKeep::LabelObjectType::NUMBER_OF_PIXELS);
     keep->ReverseOrderingOn();
 
-    // Turn it into a binary
+    // Binarize:
     const auto thresh2 = TThresh::New();
     thresh2->SetInput(keep->GetOutput());
     thresh2->SetLowerThreshold(1);
@@ -92,14 +93,14 @@ ExtractConnectedComponentsImageFilter<TInputImage, TOutputImage>
 
     // Mask the input
     const auto mask = TMask::New();
-    mask->SetInput(input);
+    mask->SetInput(output);
     mask->SetMaskImage(thresh2->GetOutput());
     mask->SetMaskingValue(1);
+    mask->SetOutsideValue(0);
     mask->Update();
 
     // Replace the input
     output->Graft(mask->GetOutput());
-    output->DisconnectPipeline();
   }
 
 }

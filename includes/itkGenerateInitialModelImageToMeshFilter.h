@@ -75,6 +75,7 @@ private:
   unsigned int m_LVClosingRadius;
   float        m_MeshNoiseSigma;
   unsigned int m_NumberOfCellsInDecimatedMesh;
+
 };
 } // namespace itk
 

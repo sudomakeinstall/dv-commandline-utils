@@ -8,12 +8,19 @@
 #include <dvITKTriangleMeshToVTKPolyData.h>
 #include <dvQuickViewPolyData.h>
 
-int main() {
+int main(int argc, char** argv) {
 
-  const std::string file_name = "/Users/davisvigneault/Dropbox/datasets/valve-plane-detection/derived_dir/00-spacing-2.0-multiplier-4/predictions/ucsd_toshiba/005/seg-nii-sm/0.nii.gz";
+  if (argc != 2) {
+    std::cerr << "Must provide a filename." << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  const std::string file_name(argv[1]);
+
   const double sigma = 0.1;
-  const unsigned int count = 1024;
-  const unsigned int radius = 10;
+  const unsigned int count = 512;
+  const unsigned int lv_radius = 10;
+  const unsigned int gn_radius = 5;
 
   using TPixel = unsigned char;
   const unsigned int Dimension = 3;
@@ -31,11 +38,11 @@ int main() {
   model->SetInput(reader->GetOutput());
   model->SetNumberOfCellsInDecimatedMesh(count);
   model->SetMeshNoiseSigma(sigma);
-  model->SetLVClosingRadius(radius);
+  model->SetLVClosingRadius(lv_radius);
+  model->SetGeneralClosingRadius(gn_radius);
   model->Update();
 
   const auto poly_data = dv::ITKTriangleMeshToVTKPolyData< TMesh >( model->GetOutput() );
-
   dv::QuickViewPolyData( poly_data );
 
   return EXIT_SUCCESS;

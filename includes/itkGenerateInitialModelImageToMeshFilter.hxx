@@ -9,17 +9,24 @@
 #include <itkConstantPadImageFilter.h>
 #include <itkCuberilleImageToMeshFilter.h>
 #include <itkQuadEdgeMesh.h>
-#include <itkAdditiveGaussianNoiseQuadEdgeMeshFilter.h>
-#include <itkQuadEdgeMeshDecimationCriteria.h>
-#include <itkSquaredEdgeLengthDecimationQuadEdgeMeshFilter.h>
-#include <itkDelaunayConformingQuadEdgeMeshFilter.h>
+//#include <itkDelaunayConformingQuadEdgeMeshFilter.h>
 #include <itkLoopTriangleCellSubdivisionQuadEdgeMeshFilter.h>
+
+// CGAL
+#include <CGAL/Simple_cartesian.h>
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/Surface_mesh_simplification/edge_collapse.h>
+#include <CGAL/Surface_mesh_simplification/Policies/Edge_collapse/Count_stop_predicate.h>
+#include <CGAL/Surface_mesh_simplification/Policies/Edge_collapse/Bounded_normal_change_placement.h>
 
 // Custom
 #include <itkEnforceBoundaryBetweenLabelsImageFilter.h>
 #include <itkFillHolesInSegmentationImageFilter.h>
 #include <itkExtractConnectedComponentsImageFilter.h>
-#include <itkRefineValenceThreeVerticesQuadEdgeMeshFilter.h>
+//#include <itkRefineValenceThreeVerticesQuadEdgeMeshFilter.h>
+#include <dvITKMeshToCGALSurfaceMesh.h>
+#include <dvCGALSurfaceMeshToITKMesh.h>
+#include <dvEdge_preserving_midpoint_placement.h>
 
 namespace itk
 {
@@ -66,12 +73,15 @@ GenerateInitialModelImageToMeshFilter<TInputImage, TOutputMesh>
   using TConnected = itk::ExtractConnectedComponentsImageFilter<InputImageType>;
   using TPad = itk::ConstantPadImageFilter<InputImageType, InputImageType>;
   using TCuberille = itk::CuberilleImageToMeshFilter< InputImageType, OutputMeshType >;
-  using TNoise = itk::AdditiveGaussianNoiseQuadEdgeMeshFilter<OutputMeshType>;
-  using TCriterion = itk::NumberOfFacesCriterion<OutputMeshType>;
-  using TDecimation = itk::SquaredEdgeLengthDecimationQuadEdgeMeshFilter<OutputMeshType, OutputMeshType, TCriterion>;
-  using TDelaunay = itk::DelaunayConformingQuadEdgeMeshFilter<OutputMeshType>;
   using TLoop = itk::LoopTriangleCellSubdivisionQuadEdgeMeshFilter<OutputMeshType>;
-  using TRefine = itk::RefineValenceThreeVerticesQuadEdgeMeshFilter<OutputMeshType>;
+//  using TDelaunay = itk::DelaunayConformingQuadEdgeMeshFilter<OutputMeshType>;
+//  using TRefine = itk::RefineValenceThreeVerticesQuadEdgeMeshFilter<OutputMeshType>;
+
+  using TCGALKernel = CGAL::Simple_cartesian<double>;
+  using TCGALPoint = TCGALKernel::Point_3;
+  using TCGALMesh = CGAL::Surface_mesh<TCGALPoint>;
+  namespace SMS = CGAL::Surface_mesh_simplification;
+  using TCGALPlacement = SMS::Bounded_normal_change_placement<SMS::Edge_preserving_midpoint_placement<TCGALMesh>>;
 
   TKernel closeKernel;
   closeKernel.SetRadius(this->GetGeneralClosingRadius());
@@ -123,36 +133,60 @@ GenerateInitialModelImageToMeshFilter<TInputImage, TOutputMesh>
   const auto cuberille = TCuberille::New();
   cuberille->SetInput(pad->GetOutput());
   cuberille->GenerateTriangleFacesOn();
+  cuberille->RemoveProblematicPixelsOn();
   cuberille->ProjectVerticesToIsoSurfaceOff();
   cuberille->SavePixelAsCellDataOn();
+  cuberille->Update();
 
-//  const auto noise = TNoise::New();
-//  noise->SetInput(cuberille->GetOutput());
-//  noise->SetSigma(this->GetMeshNoiseSigma());
-//  noise->SetSeed( 0 );
-//
-//  const auto criterion = TCriterion::New();
-//
-//  criterion->SetTopologicalChange(false);
-//  criterion->SetNumberOfElements(this->GetNumberOfCellsInDecimatedMesh());
-//
-//  const auto decimate = TDecimation::New();
-//  decimate->SetInput(noise->GetOutput());
-//  decimate->SetCriterion(criterion);
-//
-//  const auto delaunay = TDelaunay::New();
-//  delaunay->SetInput( decimate->GetOutput() );
-//
+  //
+  // CONVERT ITK TO CGAL
+  //
+
+  auto surface_mesh = dv::ITKMeshToCGALSurfaceMesh<TOutputMesh, TCGALMesh>( cuberille->GetOutput() );
+
+  //
+  // VERIFY AND DECIMATE
+  //
+
+  itkAssertOrThrowMacro(CGAL::is_triangle_mesh(surface_mesh), "Input geometry is not triangulated.")
+
+  SMS::Count_stop_predicate<TCGALMesh> stop(this->GetNumberOfCellsInDecimatedMesh());
+  SMS::edge_collapse(
+    surface_mesh
+    , stop
+    , CGAL::parameters::get_placement(TCGALPlacement())
+  );
+
+  surface_mesh.collect_garbage();
+
+  //
+  // CONVERT CGAL TO ITK
+  //
+
+  const auto o_mesh = dv::CGALSurfaceMeshToITKMesh<TCGALMesh, TOutputMesh>(surface_mesh);
+
 //  const auto refine = TRefine::New();
 //  refine->SetInput( decimate->GetOutput() );
+
+//  using TEdge = typename TOutputMesh::EdgeCellType;
+//  std::list<TEdge*> edges;
+//  for (auto it = o_mesh->GetEdgeCells()->Begin(); it != o_mesh->GetEdgeCells()->End(); ++it) {
+//    const auto edge = static_cast<TEdge*>(it.Value());
+//    if (edge->GetQEGeom()->GetLeft() != edge->GetQEGeom()->GetRight()) {
+//      edges.push_back(edge);
+//    }
+//  }
 //
-//  const auto loop = TLoop::New();
-//  loop->SetInput( refine->GetOutput() );
-//  loop->Update();
-//
-//  mesh->Graft( loop->GetOutput() );
-  cuberille->Update();
-  mesh->Graft( cuberille->GetOutput() );
+//  const auto delaunay = TDelaunay::New();
+//  delaunay->SetInput( o_mesh );
+//  delaunay->SetListOfConstrainedEdges( edges );
+
+  const auto loop = TLoop::New();
+//  loop->SetInput( delaunay->GetOutput() );
+  loop->SetInput( o_mesh );
+  loop->Update();
+
+  mesh->Graft( loop->GetOutput() );
 
 }
 

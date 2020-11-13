@@ -24,12 +24,13 @@ else()
                X11Extras)
 endif()
 
+find_package(CGAL QUIET COMPONENTS)
+
 ###########
 ## Tests ##
 ###########
 
 set(EXNAMES "dvAccelerationRegularizerTest"
-            "dvGenerateInitialModelTest"
             "dvGetListOfColorsTest"
             "dvCameraStateTest"
             "dvEdgeLengthRegularizerTest"
@@ -81,3 +82,24 @@ foreach(EXNAME ${EXNAMES})
     )
 
 endforeach()
+
+
+if (CGAL_FOUND)
+
+  set(EXNAME "dvGenerateInitialModelTest")
+  add_executable(${EXNAME} src/${EXNAME}.cxx)
+  target_link_libraries(${EXNAME}
+    dv-commandline-utils-lib
+    CGAL::CGAL
+    ${ITK_LIBRARIES}
+    ${VTK_LIBRARIES}
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${CERES_LIBRARIES})
+  add_test(NAME ${EXNAME} COMMAND ${EXNAME} ${CMAKE_SOURCE_DIR}/tests/testdata/)
+
+  vtk_module_autoinit(
+    TARGETS ${EXNAME}
+    MODULES ${VTK_LIBRARIES}
+    )
+
+endif()

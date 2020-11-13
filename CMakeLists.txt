@@ -93,6 +93,8 @@ include_directories(${RapidJSON_INCLUDE_DIRS})
 
 find_package(Ceres REQUIRED)
 
+find_package(CGAL QUIET COMPONENTS)
+
 include_directories("includes/")
 
 ##############################
@@ -151,7 +153,6 @@ set(EXNAMES "dv-label-geometry"
             "dv-tile-images"
             "dv-window-image"
             "dv-overlay-labels"
-            "dv-generate-initial-model"
    )
 
 foreach(EXNAME ${EXNAMES})
@@ -198,6 +199,20 @@ vtk_module_autoinit(
   TARGETS dv-visualize-meshes
   MODULES ${VTK_LIBRARIES}
   )
+
+if (CGAL_FOUND)
+
+  set(EXNAME "dv-generate-initial-model")
+  add_executable(${EXNAME} utils/${EXNAME}.cxx)
+  target_link_libraries(${EXNAME}
+    CGAL::CGAL
+    ${ITK_LIBRARIES}
+    dv-commandline-utils-lib
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_SYSTEM_LIBRARY})
+
+endif()
 
 #############
 ## Testing ##

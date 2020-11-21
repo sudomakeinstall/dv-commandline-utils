@@ -96,31 +96,36 @@ include(${ITK_USE_FILE})
 
 ## VTK
 ## Generated from a script in VTK's source tree:
-## Utilities/Maintenance/WhatModulesVTK.py
+## /path/to/vtk/src/Utilities/Maintenance/FindNeededModules.py \
+##   -j /path/to/vtk/bin/modules.json \
+##   -s /path/to/dv-commandline-utils/src
 
-find_package(VTK QUIET REQUIRED)
-#find_package(VTK QUIET REQUIRED COMPONENTS
-#  CommonColor
-#  CommonCore
-#  CommonDataModel
-#  CommonMath
-#  CommonTransforms
-#  FiltersCore
-#  FiltersExtraction
-#  FiltersGeneral
-#  FiltersModeling
-#  FiltersSources
-#  FiltersVerdict
-#  IOGeometry
-#  IOImage
-#  IOLegacy
-#  IOPLY
-#  IOXML
-#  ImagingCore
-#  InteractionStyle
-#  RenderingAnnotation
-#  RenderingCore
-#)
+find_package(VTK
+ COMPONENTS
+    CommonColor
+    CommonCore
+    CommonDataModel
+    CommonMath
+    CommonTransforms
+    FiltersCore
+    FiltersExtraction
+    FiltersGeneral
+    FiltersModeling
+    FiltersSources
+    FiltersVerdict
+    IOGeometry
+    IOImage
+    IOLegacy
+    IOPLY
+    IOXML
+    ImagingCore
+    InteractionStyle
+    RenderingAnnotation
+    RenderingCore
+    RenderingFreeType # implements VTK::RenderingCore
+    RenderingOpenGL2  # implements VTK::RenderingCore
+    RenderingUI       # implements VTK::RenderingCore
+)
 
 #if(${APPLE})
 #  find_package(Qt5 COMPONENTS

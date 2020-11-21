@@ -1,25 +1,33 @@
-cmake_minimum_required(VERSION 3.9.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+
+##################
+## Set Policies ##
+##################
+
+# Double colons must indicate an imported/alias target.
+cmake_policy(SET CMP0028 NEW)
+
+# Search prefixes specified by <PackageName>_ROOT.
+cmake_policy(SET CMP0074 NEW)
 
 ######################
 ## Project Settings ##
 ######################
 
-cmake_policy(SET CMP0028 NEW)
+project("dv-commandline-utils" LANGUAGES CXX C)
 
-project(dv-commandline-utils CXX C)
-
-set(dv-commandline-utils_VERSION_MAJOR "0")
-set(dv-commandline-utils_VERSION_MINOR "0")
-set(dv-commandline-utils_VERSION_PATCH "1")
-set(dv-commandline-utils_VERSION
-    "${dv-commandline-utils_VERSION_MAJOR}.${DVCppUtils_VERSION_MINOR}.${DVCppUtils_VERSION_PATCH}")
+set(${PROJECT_NAME}_VERSION_MAJOR "2020")
+set(${PROJECT_NAME}_VERSION_MINOR "11")
+set(${PROJECT_NAME}_VERSION_PATCH "21")
+set(${PROJECT_NAME}_VERSION
+  "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
 
 ###################
 ## CMake Modules ##
 ###################
 
-set(dv-commandline-utils_CMAKE_DIR ${dv-commandline-utils_SOURCE_DIR}/CMake)
-set(CMAKE_MODULE_PATH ${dv-commandline-utils_CMAKE_DIR} ${CMAKE_MODULE_PATH})
+set(${PROJECT_NAME}_CMAKE_DIR ${${PROJECT_NAME}_SOURCE_DIR}/CMake)
+set(CMAKE_MODULE_PATH ${${PROJECT_NAME}_CMAKE_DIR} ${CMAKE_MODULE_PATH})
 
 include(DVInitializeBuildType)
 include(DVPreventInSourceBuilds)
@@ -29,29 +37,29 @@ include(DVPreventInBuildInstalls)
 ## Options ##
 #############
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -O0 -fprofile-arcs -ftest-coverage" CACHE STRING "cxx debug compiler flags" FORCE)
-set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Wextra -O0 -fprofile-arcs -ftest-coverage" CACHE STRING "cxx debug compiler flags" FORCE)
+#set(CMAKE_CXX_STANDARD 17)
+#set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+#
+#set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -O0 -fprofile-arcs -ftest-coverage" CACHE STRING "cxx debug compiler flags" FORCE)
+#set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Wextra -O0 -fprofile-arcs -ftest-coverage" CACHE STRING "cxx debug compiler flags" FORCE)
 
-################################
-## Utilities Depending on ITK ##
-################################
+##########################
+## Third Party Packages ##
+##########################
 
-find_package(VTK REQUIRED)
+## Boost
 
-if(${APPLE})
-  find_package(Qt5 COMPONENTS
-               Core
-               Gui
-               Widgets)
-else()
-  find_package(Qt5 COMPONENTS
-               Core
-               Gui
-               Widgets
-               X11Extras)
-endif()
+find_package(Boost QUIET REQUIRED COMPONENTS
+  program_options
+  filesystem
+  system
+)
 
-find_package(ITK COMPONENTS
+## ITK
+## Generated from a script in ITK's source tree:
+## Utilities/Maintenance/WhatModulesITK.py
+
+find_package(ITK QUIET REQUIRED COMPONENTS
   ITKAnisotropicSmoothing
   ITKBinaryMathematicalMorphology
   ITKCommon
@@ -71,6 +79,7 @@ find_package(ITK COMPONENTS
   ITKQuadEdgeMesh
   ITKQuadEdgeMeshFiltering
   ITKReview
+  ITKTestKernel
   ITKThresholding
   ITKTransform
   ITKVtkGlue
@@ -80,139 +89,124 @@ find_package(ITK COMPONENTS
   MeshNoise
   GenericLabelInterpolator
   IOMeshSTL
-  SubdivisionQuadEdgeMeshFilter REQUIRED
+  SubdivisionQuadEdgeMeshFilter
 )
 
 include(${ITK_USE_FILE})
 
-find_package(Boost COMPONENTS program_options filesystem system REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
+## VTK
+## Generated from a script in VTK's source tree:
+## Utilities/Maintenance/WhatModulesVTK.py
 
-find_package(RapidJSON REQUIRED)
-include_directories(${RapidJSON_INCLUDE_DIRS})
+find_package(VTK QUIET REQUIRED)
+#find_package(VTK QUIET REQUIRED COMPONENTS
+#  CommonColor
+#  CommonCore
+#  CommonDataModel
+#  CommonMath
+#  CommonTransforms
+#  FiltersCore
+#  FiltersExtraction
+#  FiltersGeneral
+#  FiltersModeling
+#  FiltersSources
+#  FiltersVerdict
+#  IOGeometry
+#  IOImage
+#  IOLegacy
+#  IOPLY
+#  IOXML
+#  ImagingCore
+#  InteractionStyle
+#  RenderingAnnotation
+#  RenderingCore
+#)
 
-find_package(Ceres REQUIRED)
+#if(${APPLE})
+#  find_package(Qt5 COMPONENTS
+#               Core
+#               Gui
+#               Widgets)
+#else()
+#  find_package(Qt5 COMPONENTS
+#               Core
+#               Gui
+#               Widgets
+#               X11Extras)
+#endif()
 
-find_package(CGAL QUIET COMPONENTS)
+# CGAL
 
-include_directories("includes/")
+find_package(CGAL QUIET REQUIRED)
 
-##############################
-## dv-commandline-utils-lib ##
-##############################
+# Eigen
+
+find_package(Eigen3 REQUIRED NO_MODULE)
+
+# This library
 
 file(GLOB SRC src/*.cxx)
-add_library(dv-commandline-utils-lib ${SRC})
-target_link_libraries(dv-commandline-utils-lib ${VTK_LIBRARIES})
+add_library(${CMAKE_PROJECT_NAME} ${SRC})
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/includes/>"
+  "$<INSTALL_INTERFACE:include>"
+  )
+target_link_libraries(${PROJECT_NAME} PRIVATE
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
+)
 
-set(EXNAMES "dv-convert-mesh"
-            "dv-scale-mesh"
-            "dv-translate-mesh"
-            "dv-binarize-mesh"
-            "dv-permute-axes-3d"
-            "dv-convert-labels-to-mesh"
-            "dv-decimate-mesh"
-            "dv-subdivide-mesh-loop"
-            "dv-add-mesh-noise"
-            "dv-mesh-similarity-vertex-distance"
-            "dv-mesh-area-volume"
-            "dv-extract-interface-between-segments"
-            "dv-smooth-mesh"
-            "dv-extract-connected-mesh-components"
-            "dv-segmentation-to-labeled-point-set"
-   )
+# Pull it all together...
 
-foreach(EXNAME ${EXNAMES})
+add_library(${PROJECT_NAME}_dependencies INTERFACE)
+target_link_libraries(${PROJECT_NAME}_dependencies INTERFACE
+  Boost::program_options
+  Boost::filesystem
+  Boost::system
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
+  ${PROJECT_NAME}
+  CGAL::CGAL
+  Eigen3::Eigen
+  )
 
-  add_executable(${EXNAME} utils/${EXNAME}.cxx)
-  target_link_libraries(${EXNAME} ${ITK_LIBRARIES} ${Boost_PROGRAM_OPTIONS_LIBRARY})
+#####################
+## Build Utilities ##
+#####################
 
-endforeach()
+file(GLOB UTILS utils/*.cxx)
 
-set(EXNAMES "dv-label-geometry"
-            "dv-enforce-boundary-between-labels"
-            "dv-anisotropic-smoothing"
-            "dv-compare-image-information"
-            "dv-convert-image"
-            "dv-image-information"
-            "dv-resample-volume"
-            "dv-resample-from-reference"
-            "dv-collapse-4d"
-            "dv-explode-4d"
-            "dv-flip-along-axes"
-            "dv-change-information-3d"
-            "dv-binary-threshold"
-            "dv-extract-connected-components"
-            "dv-fill-holes-in-binary-image"
-            "dv-fill-holes-in-segmentation"
-            "dv-fill-holes-in-mesh"
-            "dv-binary-opening"
-            "dv-segmentation-error"
-            "dv-change-labels"
-            "dv-extract-orthogonal-slice"
-            "dv-tile-images"
-            "dv-window-image"
-            "dv-overlay-labels"
-   )
+foreach(UTIL ${UTILS})
 
-foreach(EXNAME ${EXNAMES})
-
-add_executable(${EXNAME} utils/${EXNAME}.cxx)
-target_link_libraries(${EXNAME}
-                      ${ITK_LIBRARIES}
-                      dv-commandline-utils-lib
-                      ${Boost_PROGRAM_OPTIONS_LIBRARY}
-                      ${Boost_FILESYSTEM_LIBRARY}
-                      ${Boost_SYSTEM_LIBRARY}
-                     )
-
-endforeach()
-
-set(EXNAMES "dv-write-arrow-from-start-and-end"
-            "dv-mesh-quality"
-            "dv-plot-vectors"
-   )
-
-foreach(EXNAME ${EXNAMES})
-
-  add_executable(${EXNAME} utils/${EXNAME}.cxx)
-  target_link_libraries(${EXNAME} ${VTK_LIBRARIES} ${Boost_PROGRAM_OPTIONS_LIBRARY})
+  get_filename_component(EXNAME ${UTIL} NAME_WE)
+  add_executable(${EXNAME} ${UTIL})
+  target_link_libraries(${EXNAME} ${PROJECT_NAME}_dependencies)
 
   vtk_module_autoinit(
     TARGETS ${EXNAME}
     MODULES ${VTK_LIBRARIES}
     )
+
 endforeach()
 
-set(EXNAME "dv-visualize-meshes")
-add_executable(${EXNAME} utils/${EXNAME}.cxx)
-target_link_libraries(${EXNAME}
-                      dv-commandline-utils-lib
-                      ${ITK_LIBRARIES}
-                      ${VTK_LIBRARIES}
-                      ${Boost_PROGRAM_OPTIONS_LIBRARY}
-                      ${Boost_FILESYSTEM_LIBRARY}
-                      ${Boost_SYSTEM_LIBRARY}
-                     )
+########################################################
+## Make the project discoverable by find_package(...) ##
+########################################################
 
-vtk_module_autoinit(
-  TARGETS dv-visualize-meshes
-  MODULES ${VTK_LIBRARIES}
-  )
+file(RELATIVE_PATH INSTALL_ROOT_REL_CONFIG_INSTALL_DIR
+  "${dv-commandline-utils_BINARY_DIR}"
+  "${dv-commandline-utils_SOURCE_DIR}")
 
-if (CGAL_FOUND)
+export(
+  TARGETS ${CMAKE_PROJECT_NAME}
+  NAMESPACE ${CMAKE_PROJECT_NAME}::
+  FILE "${${CMAKE_PROJECT_NAME}_BINARY_DIR}/${CMAKE_PROJECT_NAME}Targets.cmake"
+)
 
-  set(EXNAME "dv-generate-initial-model")
-  add_executable(${EXNAME} utils/${EXNAME}.cxx)
-  target_link_libraries(${EXNAME}
-    CGAL::CGAL
-    ${ITK_LIBRARIES}
-    dv-commandline-utils-lib
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY})
+export(PACKAGE ${CMAKE_PROJECT_NAME})
 
-endif()
+configure_file("${${CMAKE_PROJECT_NAME}_SOURCE_DIR}/CMake/${CMAKE_PROJECT_NAME}Config.cmake.in"
+  "${${CMAKE_PROJECT_NAME}_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake" @ONLY)
 
 #############
 ## Testing ##
@@ -227,3 +221,4 @@ if(BUILD_TESTING)
   add_subdirectory(tests)
 
 endif()
+

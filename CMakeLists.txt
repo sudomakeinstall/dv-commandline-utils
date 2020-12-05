@@ -47,6 +47,10 @@ include(DVPreventInBuildInstalls)
 ## Third Party Packages ##
 ##########################
 
+## RapidJSON
+
+find_package(RapidJSON QUIET REQUIRED)
+
 ## Boost
 
 find_package(Boost QUIET REQUIRED COMPONENTS
@@ -151,11 +155,15 @@ find_package(Eigen3 REQUIRED NO_MODULE)
 # This library
 
 file(GLOB SRC src/*.cxx)
+
 add_library(${CMAKE_PROJECT_NAME} ${SRC})
+
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/includes/>"
   "$<INSTALL_INTERFACE:include>"
   )
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${RapidJSON_INCLUDE_DIRS})
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
   ${ITK_LIBRARIES}
   ${VTK_LIBRARIES}

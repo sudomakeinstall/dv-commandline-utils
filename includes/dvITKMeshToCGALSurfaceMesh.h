@@ -16,8 +16,8 @@ TCGALMesh ITKMeshToCGALSurfaceMesh(typename TITKMesh::Pointer itk_mesh) {
   using TCGALVertex = typename TCGALMesh::Vertex_index;
   using TCGALFace = typename TCGALMesh::Face_index;
   using TData = typename TITKMesh::PixelType;
-  using TVertexDataMap = typename TCGALMesh::Property_map<TCGALVertex,TData>;
-  using TFaceDataMap = typename TCGALMesh::Property_map<TCGALFace,TData>;
+  using TVertexDataMap = typename TCGALMesh::template Property_map<TCGALVertex,TData>;
+  using TFaceDataMap = typename TCGALMesh::template Property_map<TCGALFace,TData>;
 
   TCGALMesh cgal_mesh;
 

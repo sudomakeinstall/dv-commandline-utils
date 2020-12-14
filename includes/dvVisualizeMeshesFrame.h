@@ -45,7 +45,7 @@ void AddSegmentationView(
 
 void TurnAllActorsOn() {
   for (auto &sv : this->m_SegmentationViews) {
-    sv.AddAllActors();
+    sv.AddActor();
   }
 
   for (auto &mv : this->m_MeshViews) {
@@ -58,10 +58,6 @@ void TurnAllActorsOn() {
 }
 
 void SetHue(const double hue) {
-
-  for (auto &sv : this->m_SegmentationViews) {
-    sv.SetHue(hue);
-  }
 
   for (auto &mv : this->m_MeshViews) {
     mv.SetHue(hue);
@@ -84,7 +80,7 @@ void SetTextAnnotationsVisible(const bool &Visible) {
 
 void TurnAllActorsOff() {
   for (auto &sv : this->m_SegmentationViews) {
-    sv.RemoveAllActors();
+    sv.RemoveActor();
   }
 
   for (auto &mv : this->m_MeshViews) {

@@ -13,6 +13,7 @@
 #include <vtkSmartPointer.h>
 #include <vtkProperty.h>
 #include <vtkMath.h>
+#include <vtkPolyDataMapper.h>
 
 namespace dv {
 
@@ -26,8 +27,9 @@ class SegmentationView {
 public:
 
   std::string m_FileName;
-  vtkSmartPointer<vtkRenderer> m_Renderer;
-  std::vector<unsigned int> m_Labels;
+  vtkRenderer* m_Renderer;
+  vtkSmartPointer<vtkPolyDataMapper> m_Mapper = nullptr;
+  vtkSmartPointer<vtkActor> m_Actor = nullptr;
   std::vector<std::array<double, 3>> m_Colors;
 
   SegmentationView(const SegmentationView& other);
@@ -39,18 +41,8 @@ public:
                    const std::vector<unsigned int> Labels,
                    const std::vector<std::array<double, 3>> Colors);
 
-  std::map<unsigned int, vtkSmartPointer<vtkActor>> m_Actors;
-
-  void AddAllActors();
-  void RemoveAllActors();
-
-  void SetHue(const double hue) {
-    double r, g, b;
-    vtkMath::HSVToRGB(hue, 1.0, 1.0, &r, &g, &b);
-    for (auto &a : this->m_Actors) {
-      a.second->GetProperty()->SetColor( r, g, b );
-    }
-  }
+  void AddActor();
+  void RemoveActor();
 
 };
 

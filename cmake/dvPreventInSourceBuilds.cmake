@@ -1,4 +1,8 @@
 # This function will prevent in-source builds
+#
+# Modified from:
+# https://github.com/hinerm/ITK/blob/master/CMake/PreventInSourceBuilds.cmake
+
 function(AssureOutOfSourceBuilds)
   # make sure the user doesn't play dirty with symlinks
   get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)

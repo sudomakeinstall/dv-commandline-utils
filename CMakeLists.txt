@@ -17,8 +17,8 @@ cmake_policy(SET CMP0074 NEW)
 project("dv-commandline-utils" LANGUAGES CXX C)
 
 set(${PROJECT_NAME}_VERSION_MAJOR "2020")
-set(${PROJECT_NAME}_VERSION_MINOR "11")
-set(${PROJECT_NAME}_VERSION_PATCH "21")
+set(${PROJECT_NAME}_VERSION_MINOR "12")
+set(${PROJECT_NAME}_VERSION_PATCH "14")
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
 
@@ -26,12 +26,12 @@ set(${PROJECT_NAME}_VERSION
 ## CMake Modules ##
 ###################
 
-set(${PROJECT_NAME}_CMAKE_DIR ${${PROJECT_NAME}_SOURCE_DIR}/CMake)
+set(${PROJECT_NAME}_CMAKE_DIR ${${PROJECT_NAME}_SOURCE_DIR}/cmake)
 set(CMAKE_MODULE_PATH ${${PROJECT_NAME}_CMAKE_DIR} ${CMAKE_MODULE_PATH})
 
-include(DVInitializeBuildType)
-include(DVPreventInSourceBuilds)
-include(DVPreventInBuildInstalls)
+include(dvInitializeBuildType)
+include(dvPreventInSourceBuilds)
+include(dvPreventInBuildInstalls)
 
 #############
 ## Options ##
@@ -218,7 +218,7 @@ export(
 
 export(PACKAGE ${CMAKE_PROJECT_NAME})
 
-configure_file("${${CMAKE_PROJECT_NAME}_SOURCE_DIR}/CMake/${CMAKE_PROJECT_NAME}Config.cmake.in"
+configure_file("${${CMAKE_PROJECT_NAME}_SOURCE_DIR}/cmake/${CMAKE_PROJECT_NAME}Config.cmake.in"
   "${${CMAKE_PROJECT_NAME}_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake" @ONLY)
 
 #############

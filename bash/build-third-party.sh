@@ -11,7 +11,8 @@ mkdir -p cgal/bin
 cd cgal
 git clone git@github.com:cgal/cgal.git src
 cd bin
-cmake ../src
+cmake ../src \
+  -DCMAKE_BUILD_TYPE="RelWithDebInfo"
 cmake --build .
 cd ${THIRD_PARTY_DIR}
 
@@ -23,6 +24,7 @@ cd vtk
 git clone git@github.com:Kitware/vtk.git src
 cd bin
 cmake ../src \
+  -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
   -DBUILD_SHARED_LIBS=OFF \
   -DVTK_BUILD_EXAMPLES=OFF \
   -DVTK_BUILD_TESTING=OFF \
@@ -41,6 +43,7 @@ git remote rename origin upstream
 git remote add origin git@github.com:dvigneault/itkcuberille.git
 cd ../bin
 cmake ../src \
+  -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
   -DBUILD_EXAMPLES=OFF \
   -DBUILD_TESTING=OFF \
   -DModule_ITKReview=ON \
@@ -48,7 +51,7 @@ cmake ../src \
 cmake --build .
 cd ${THIRD_PARTY_DIR}
 
-## ITK remotes
+# ITK remotes
 
 REMOTES=("cuberille"
          "genericlabelinterpolator"
@@ -68,7 +71,9 @@ do
   git remote rename origin upstream
   git remote add origin git@github.com:dvigneault/itk${REMOTE}.git
   cd ../bin
-  ITK_DIR=${HOME}/Developer/thirdparty/itk/bin cmake ../src
+  cmake ../src \
+    -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
+    -DITK_DIR=${HOME}/Developer/thirdparty/itk/bin
   cmake --build .
   cd ${THIRD_PARTY_DIR}
 

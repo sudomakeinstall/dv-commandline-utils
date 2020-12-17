@@ -3,10 +3,13 @@
 #include <itkQuadEdgeMesh.h>
 #include <itkImageFileReader.h>
 
+#include <itkCuberilleImageToMeshFilter.h>
+
 // Custom
 #include <itkGenerateInitialModelImageToMeshFilter.h>
 #include <dvITKTriangleMeshToVTKPolyData.h>
-#include <dvQuickViewPolyData.h>
+#include <itkCleanSegmentationImageFilter.h>
+#include <dvQuickViewSideBySidePolyData.h>
 
 int main(int argc, char** argv) {
 
@@ -30,9 +33,23 @@ int main(int argc, char** argv) {
   using TImage = itk::Image<TPixel, Dimension>;
   using TReader = itk::ImageFileReader<TImage>;
   using TModel = itk::GenerateInitialModelImageToMeshFilter<TImage,TMesh>;
+  using TClean = itk::CleanSegmentationImageFilter<TImage>;
+
+  using TCuberille = itk::CuberilleImageToMeshFilter<TImage, TMesh>;
 
   const auto reader = TReader::New();
   reader->SetFileName(file_name);
+
+  const auto clean = TClean::New();
+  clean->SetInput( reader->GetOutput() );
+
+  const auto cuberille = TCuberille::New();
+  cuberille->SetInput(clean->GetOutput());
+  cuberille->GenerateTriangleFacesOn();
+  cuberille->RemoveProblematicPixelsOn();
+  cuberille->ProjectVerticesToIsoSurfaceOff();
+  cuberille->SavePixelAsCellDataOn();
+  cuberille->Update();
 
   const auto model = TModel::New();
   model->SetInput(reader->GetOutput());
@@ -42,8 +59,10 @@ int main(int argc, char** argv) {
   model->SetGeneralClosingRadius(gn_radius);
   model->Update();
 
-  const auto poly_data = dv::ITKTriangleMeshToVTKPolyData< TMesh >( model->GetOutput() );
-  dv::QuickViewPolyData( poly_data );
+  const auto d = dv::ITKTriangleMeshToVTKPolyData< TMesh >( cuberille->GetOutput() );
+  const auto m = dv::ITKTriangleMeshToVTKPolyData< TMesh >( model->GetOutput() );
+
+  dv::QuickViewSideBySidePolyData( d, m );
 
   return EXIT_SUCCESS;
 

@@ -9,7 +9,7 @@
 #include <itkGenerateInitialModelImageToMeshFilter.h>
 #include <dvITKTriangleMeshToVTKPolyData.h>
 #include <itkCleanSegmentationImageFilter.h>
-#include <dvQuickViewSideBySidePolyData.h>
+#include <dvQuickViewMultiplePolyData.h>
 
 int main(int argc, char** argv) {
 
@@ -62,7 +62,11 @@ int main(int argc, char** argv) {
   const auto d = dv::ITKTriangleMeshToVTKPolyData< TMesh >( cuberille->GetOutput() );
   const auto m = dv::ITKTriangleMeshToVTKPolyData< TMesh >( model->GetOutput() );
 
-  dv::QuickViewSideBySidePolyData( d, m );
+  std::vector<vtkPolyData*> poly_data_vector;
+  poly_data_vector.emplace_back(d);
+  poly_data_vector.emplace_back(m);
+  poly_data_vector.emplace_back(d);
+  dv::QuickViewMultiplePolyData( poly_data_vector, true );
 
   return EXIT_SUCCESS;
 

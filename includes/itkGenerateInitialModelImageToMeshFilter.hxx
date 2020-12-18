@@ -78,6 +78,9 @@ GenerateInitialModelImageToMeshFilter<TInputImage, TOutputMesh>
   closeKernel.SetRadius(this->GetGeneralClosingRadius());
   closeKernel.CreateStructuringElement();
 
+  const auto clean = TClean::New();
+  clean->SetInput( image );
+
   std::array<typename TClose::Pointer, 8> closing;
   for (size_t i = 0; i < 8; ++i) {
     closing[i] = TClose::New();
@@ -86,7 +89,7 @@ GenerateInitialModelImageToMeshFilter<TInputImage, TOutputMesh>
     if (i > 0) {
       closing[i]->SetInput( closing[i - 1]->GetOutput() );
     } else {
-      closing[i]->SetInput( image );
+      closing[i]->SetInput( clean->GetOutput() );
     }
   }
 
@@ -99,11 +102,8 @@ GenerateInitialModelImageToMeshFilter<TInputImage, TOutputMesh>
   closing_lv->SetKernel( lvCloseKernel );
   closing_lv->SetForegroundValue( 1 );
 
-  const auto clean = TClean::New();
-  clean->SetInput( closing_lv->GetOutput() );
-
   const auto cuberille = TCuberille::New();
-  cuberille->SetInput(clean->GetOutput());
+  cuberille->SetInput(closing_lv->GetOutput());
   cuberille->GenerateTriangleFacesOn();
   cuberille->RemoveProblematicPixelsOn();
   cuberille->ProjectVerticesToIsoSurfaceOff();

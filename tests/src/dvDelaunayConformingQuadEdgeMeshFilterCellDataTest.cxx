@@ -17,7 +17,7 @@
 #include <vtkNamedColors.h>
 
 // Custom
-#include <dvITKTriangleMeshToVTKPolyData.h>
+#include <dvITKMeshToVTKPolyData.h>
 
 void
 DelaunayCellDataTestHelper() {
@@ -107,13 +107,13 @@ DelaunayCellDataTestHelper() {
   }
 
   // Visualize
-  const auto i_polydata = dv::ITKTriangleMeshToVTKPolyData<TQEMesh>( i_mesh );
+  const auto i_polydata = dv::ITKMeshToVTKPolyData<TQEMesh>( i_mesh );
   const auto i_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
   i_mapper->SetInputData( i_polydata );
   const auto i_actor = vtkSmartPointer<vtkActor>::New();
   i_actor->SetMapper(i_mapper);
 
-  const auto o_polydata = dv::ITKTriangleMeshToVTKPolyData<TQEMesh>( o_mesh );
+  const auto o_polydata = dv::ITKMeshToVTKPolyData<TQEMesh>( o_mesh );
   const auto o_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
   o_mapper->SetInputData( o_polydata );
   const auto o_actor = vtkSmartPointer<vtkActor>::New();

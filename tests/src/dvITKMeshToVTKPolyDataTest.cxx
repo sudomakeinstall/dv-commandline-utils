@@ -1,4 +1,4 @@
-#include <dvITKTriangleMeshToVTKPolyData.h>
+#include <dvITKMeshToVTKPolyData.h>
 #include <itkMesh.h>
 #include <itkRegularSphereMeshSource.h>
 #include <vtkPolyData.h>
@@ -16,7 +16,7 @@ int main() {
 
   const auto source = TSource::New();
   source->Update();
-  const auto polydata = dv::ITKTriangleMeshToVTKPolyData<TMesh>( source->GetOutput() );
+  const auto polydata = dv::ITKMeshToVTKPolyData<TMesh>( source->GetOutput() );
   const auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
   mapper->SetInputData(polydata);
   const auto actor = vtkSmartPointer<vtkActor>::New();

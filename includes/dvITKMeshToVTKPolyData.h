@@ -1,12 +1,12 @@
-#ifndef dv_ITKTriangleMeshToVTKPolyData_h
-#define dv_ITKTriangleMeshToVTKPolyData_h
+#ifndef dv_ITKMeshToVTKPolyData_h
+#define dv_ITKMeshToVTKPolyData_h
 
 #include <itkMesh.h>
 #include <vtkSmartPointer.h>
 #include <vtkPolyData.h>
 #include <vtkCellData.h>
 #include <vtkPoints.h>
-#include <vtkTriangle.h>
+#include <vtkPolygon.h>
 #include <vtkCellArray.h>
 #include <vtkFloatArray.h>
 #include <vtkPointData.h>
@@ -14,7 +14,7 @@
 namespace dv {
 
 template<typename TMesh>
-vtkSmartPointer<vtkPolyData> ITKTriangleMeshToVTKPolyData(typename TMesh::Pointer mesh) {
+vtkSmartPointer<vtkPolyData> ITKMeshToVTKPolyData(typename TMesh::Pointer mesh) {
 
   const auto polydata = vtkSmartPointer<vtkPolyData>::New();
 
@@ -47,30 +47,31 @@ vtkSmartPointer<vtkPolyData> ITKTriangleMeshToVTKPolyData(typename TMesh::Pointe
 
   // Cells
   if (nullptr != mesh->GetCells() && (mesh->GetNumberOfCells() > 0)) {
-    const auto triangles = vtkSmartPointer<vtkCellArray>::New();
-    const auto cell_data = vtkSmartPointer<vtkFloatArray>::New();
+    const auto vtk_cells = vtkSmartPointer<vtkCellArray>::New();
+    const auto vtk_cell_data = vtkSmartPointer<vtkFloatArray>::New();
     for (auto it = mesh->GetCells()->Begin();
          it != mesh->GetCells()->End();
          ++it) {
-      const auto triangle = vtkSmartPointer<vtkTriangle>::New();
-      for (size_t i = 0; i < 3; ++i) {
-        triangle->GetPointIds()->SetId(i, it.Value()->GetPointIds()[i]);
+      const auto vtk_poly = vtkSmartPointer<vtkPolygon>::New();
+      vtk_poly->GetPointIds()->SetNumberOfIds(it.Value()->GetNumberOfPoints());
+      for (size_t i = 0; i < it.Value()->GetNumberOfPoints(); ++i) {
+        vtk_poly->GetPointIds()->SetId(i, it.Value()->GetPointIds()[i]);
       }
-      triangles->InsertNextCell( triangle );
+      vtk_cells->InsertNextCell(vtk_poly);
       // Cell Data
       if (nullptr != mesh->GetCellData() && (mesh->GetCellData()->Size() > 0)) {
         if (mesh->GetCellData()->IndexExists(it.Index())) {
-          cell_data->InsertNextValue(
+          vtk_cell_data->InsertNextValue(
             mesh->GetCellData()->ElementAt(it.Index()));
         } else {
-          cell_data->InsertNextValue( 0 );
+          vtk_cell_data->InsertNextValue( 0 );
         }
       }
     }
     if (nullptr != mesh->GetCellData() && (mesh->GetCellData()->Size() > 0)) {
-      polydata->GetCellData()->SetScalars(cell_data);
+      polydata->GetCellData()->SetScalars(vtk_cell_data);
     }
-    polydata->SetPolys(triangles);
+    polydata->SetPolys(vtk_cells);
   }
 
   return polydata;

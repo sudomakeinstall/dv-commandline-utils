@@ -12,7 +12,7 @@
 #include <vtkSmoothPolyDataFilter.h>
 
 // Custom
-#include <dvITKTriangleMeshToVTKPolyData.h>
+#include <dvITKMeshToVTKPolyData.h>
 #include <dvSegmentationView.h>
 #include <dvGetLookupTable.h>
 
@@ -78,7 +78,7 @@ SegmentationView::Setup()
     return;
   }
 
-  const auto poly_data = dv::ITKTriangleMeshToVTKPolyData< TMesh >( cuberille->GetOutput() );
+  const auto poly_data = dv::ITKMeshToVTKPolyData< TMesh >( cuberille->GetOutput() );
 
   const auto smooth = vtkSmartPointer<vtkSmoothPolyDataFilter>::New();
   smooth->SetInputData(poly_data);

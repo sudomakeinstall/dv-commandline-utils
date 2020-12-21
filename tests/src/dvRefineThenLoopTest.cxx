@@ -5,7 +5,7 @@
 #include <itkQuadEdgeMeshEulerOperatorDeleteCenterVertexFunction.h>
 
 //// Custom
-//#include <dvITKTriangleMeshToVTKPolyData.h>
+//#include <dvITKMeshToVTKPolyData.h>
 //#include <dvQuickViewSideBySidePolyData.h>
 //
 const unsigned int Dimension = 3;
@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
   mesh->Graft( reader->GetOutput() );
 
   std::cout << mesh->GetNumberOfPoints() << std::endl;
-//  const auto i_polydata = dv::ITKTriangleMeshToVTKPolyData<TMesh>( mesh );
+//  const auto i_polydata = dv::ITKMeshToVTKPolyData<TMesh>( mesh );
 //
   for (auto it = mesh->GetPoints()->Begin(); it != mesh->GetPoints()->End(); ++it) {
     if (3 != it.Value().GetValence()) { continue; }
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
   loop->SetInput( mesh );
   loop->Update();
 //
-//  const auto o_polydata = dv::ITKTriangleMeshToVTKPolyData<TMesh>( mesh );
+//  const auto o_polydata = dv::ITKMeshToVTKPolyData<TMesh>( mesh );
 //
 //  dv::QuickViewSideBySidePolyData(i_polydata, o_polydata);
 

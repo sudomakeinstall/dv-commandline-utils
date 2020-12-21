@@ -18,7 +18,7 @@
 #include <vtkPolyDataReader.h>
 
 // Custom
-#include <dvITKTriangleMeshToVTKPolyData.h>
+#include <dvITKMeshToVTKPolyData.h>
 
 int
 main() {
@@ -79,7 +79,7 @@ main() {
   itkAssertOrThrowMacro(i_cell == i_data,
     "Incorrect number of entries in input cell data array.");
 
-  const auto i_polydata = dv::ITKTriangleMeshToVTKPolyData<TMesh>( i_mesh );
+  const auto i_polydata = dv::ITKMeshToVTKPolyData<TMesh>( i_mesh );
 
   const auto writer = TWriter::New();
   writer->SetInput( i_mesh );

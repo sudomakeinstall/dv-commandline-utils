@@ -4,7 +4,7 @@
 #include <itkQuadEdgeMesh.h>
 #include <itkConstantPadImageFilter.h>
 #include <itkCuberilleImageToMeshFilter.h>
-#include <dvITKTriangleMeshToVTKPolyData.h>
+#include <dvITKMeshToVTKPolyData.h>
 #include <dvQuickViewPolyData.h>
 
 namespace dv {
@@ -32,7 +32,7 @@ QuickViewVolume(typename TImage::Pointer volume) {
   cuberille->SavePixelAsCellDataOn();
   cuberille->Update();
 
-  const auto poly_data = dv::ITKTriangleMeshToVTKPolyData< TMesh >( cuberille->GetOutput() );
+  const auto poly_data = dv::ITKMeshToVTKPolyData< TMesh >( cuberille->GetOutput() );
   dv::QuickViewPolyData( poly_data );
 
 }

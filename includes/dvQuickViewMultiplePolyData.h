@@ -22,7 +22,8 @@ namespace dv
 void
 QuickViewMultiplePolyData(std::vector<vtkPolyData*> poly_data_vector, const bool synchronize_cameras = true) {
 
-  const auto lut = dv::LUT::Rainbow();
+//  const auto lut = dv::LUT::Rainbow();
+  const auto lut = dv::LUT::SQUEEZ(0, 1);
 
   size_t N = poly_data_vector.size();
   const double width = 1.0/N;

@@ -8,7 +8,7 @@
 #include <itkConnectedComponentImageFilter.h>
 
 // Custom
-#include <dvITKTriangleMeshToVTKPolyData.h>
+#include <dvITKMeshToVTKPolyData.h>
 #include <dvQuickViewSideBySidePolyData.h>
 
 int main() {
@@ -77,8 +77,8 @@ int main() {
     ITK_TRY_EXPECT_NO_EXCEPTION(loop3->Update());
 
     {
-    const auto poly_data_i = dv::ITKTriangleMeshToVTKPolyData< TMesh >( extract->GetOutput() );
-    const auto poly_data_o = dv::ITKTriangleMeshToVTKPolyData< TMesh >( loop3->GetOutput() );
+    const auto poly_data_i = dv::ITKMeshToVTKPolyData< TMesh >( extract->GetOutput() );
+    const auto poly_data_o = dv::ITKMeshToVTKPolyData< TMesh >( loop3->GetOutput() );
     dv::QuickViewSideBySidePolyData( poly_data_i, poly_data_o );
     }
 

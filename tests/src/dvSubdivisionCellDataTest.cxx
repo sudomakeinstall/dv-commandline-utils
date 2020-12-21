@@ -12,7 +12,7 @@
 #include <vtkPolyData.h>
 
 // Custom
-#include <dvITKTriangleMeshToVTKPolyData.h>
+#include <dvITKMeshToVTKPolyData.h>
 #include <dvQuickViewSideBySidePolyData.h>
 
 template< typename SubdivisionType >
@@ -100,8 +100,8 @@ SubdivisionTestHelper(const bool uniform) {
     "Incorrect number of entries in output cell data array.");
 
   // Visualize
-  const auto i_polydata = dv::ITKTriangleMeshToVTKPolyData<TQEMesh>( i_mesh );
-  const auto o_polydata = dv::ITKTriangleMeshToVTKPolyData<TQEMesh>( o_mesh );
+  const auto i_polydata = dv::ITKMeshToVTKPolyData<TQEMesh>( i_mesh );
+  const auto o_polydata = dv::ITKMeshToVTKPolyData<TQEMesh>( o_mesh );
 
   dv::QuickViewSideBySidePolyData(i_polydata, o_polydata);
 

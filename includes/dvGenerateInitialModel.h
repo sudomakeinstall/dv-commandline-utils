@@ -9,7 +9,7 @@
 
 // Custom
 #include <itkGenerateInitialModelImageToMeshFilter.h>
-#include <dvITKTriangleMeshToVTKPolyData.h>
+#include <dvITKMeshToVTKPolyData.h>
 
 namespace dv {
 
@@ -40,7 +40,7 @@ GenerateInitialModel(const std::string& inputSegmentationName,
   model->SetLVClosingRadius(radius);
   model->Update();
 
-  const auto poly_data = dv::ITKTriangleMeshToVTKPolyData< TMesh >( model->GetOutput() );
+  const auto poly_data = dv::ITKMeshToVTKPolyData< TMesh >( model->GetOutput() );
 
   const auto writer = vtkSmartPointer< vtkPolyDataWriter >::New();
   writer->SetInputData( poly_data );

@@ -94,6 +94,7 @@ find_package(ITK QUIET REQUIRED COMPONENTS
   GenericLabelInterpolator
   IOMeshSTL
   SubdivisionQuadEdgeMeshFilter
+  ITKDVUtilities
 )
 
 include(${ITK_USE_FILE})

@@ -45,7 +45,7 @@ Rainbow()
 }
 
 vtkSmartPointer<vtkLookupTable>
-SQUEEZ(const double min, const double max, const size_t N = 256)
+SQUEEZ(const double min, const double max, const size_t N)
 {
 
   // Create a lookup table to map cell data to colors

@@ -12,7 +12,7 @@ vtkSmartPointer<vtkLookupTable>
 Rainbow();
 
 vtkSmartPointer<vtkLookupTable>
-SQUEEZ();
+SQUEEZ(const double min, const double max, const size_t N = 256);
 
 } // end namespace LUT
 

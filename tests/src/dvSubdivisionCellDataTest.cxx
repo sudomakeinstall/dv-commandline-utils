@@ -13,7 +13,7 @@
 
 // Custom
 #include <dvITKMeshToVTKPolyData.h>
-#include <dvQuickViewSideBySidePolyData.h>
+#include <dvQuickViewMultiplePolyData.h>
 
 template< typename SubdivisionType >
 void
@@ -103,7 +103,10 @@ SubdivisionTestHelper(const bool uniform) {
   const auto i_polydata = dv::ITKMeshToVTKPolyData<TQEMesh>( i_mesh );
   const auto o_polydata = dv::ITKMeshToVTKPolyData<TQEMesh>( o_mesh );
 
-  dv::QuickViewSideBySidePolyData(i_polydata, o_polydata);
+  std::vector<vtkPolyData*> poly_data_vector;
+  poly_data_vector.emplace_back(i_polydata);
+  poly_data_vector.emplace_back(o_polydata);
+  dv::QuickViewMultiplePolyData(poly_data_vector);
 
 }
 

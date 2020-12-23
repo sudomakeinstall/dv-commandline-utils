@@ -9,7 +9,7 @@
 
 // Custom
 #include <dvITKMeshToVTKPolyData.h>
-#include <dvQuickViewSideBySidePolyData.h>
+#include <dvQuickViewMultiplePolyData.h>
 
 int main() {
 
@@ -79,7 +79,10 @@ int main() {
     {
     const auto poly_data_i = dv::ITKMeshToVTKPolyData< TMesh >( extract->GetOutput() );
     const auto poly_data_o = dv::ITKMeshToVTKPolyData< TMesh >( loop3->GetOutput() );
-    dv::QuickViewSideBySidePolyData( poly_data_i, poly_data_o );
+    std::vector<vtkPolyData*> poly_data_vector;
+    poly_data_vector.emplace_back(poly_data_i);
+    poly_data_vector.emplace_back(poly_data_o);
+    dv::QuickViewMultiplePolyData( poly_data_vector );
     }
 
   }

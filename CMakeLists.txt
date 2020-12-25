@@ -18,7 +18,7 @@ project("dv-commandline-utils" LANGUAGES CXX C)
 
 set(${PROJECT_NAME}_VERSION_MAJOR "2020")
 set(${PROJECT_NAME}_VERSION_MINOR "12")
-set(${PROJECT_NAME}_VERSION_PATCH "14")
+set(${PROJECT_NAME}_VERSION_PATCH "25")
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
 
@@ -232,7 +232,7 @@ include(CTest)
 
 if(BUILD_TESTING)
 
-  add_subdirectory(tests)
+  add_subdirectory(test)
 
 endif()
 

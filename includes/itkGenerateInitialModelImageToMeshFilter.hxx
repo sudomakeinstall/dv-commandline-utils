@@ -61,18 +61,17 @@ GenerateInitialModelImageToMeshFilter<TInputImage, TOutputMesh>
   const auto image = Superclass::GetInput(0);
   typename OutputMeshType::Pointer mesh = Superclass::GetOutput();
 
-
   using TKernel = itk::BinaryBallStructuringElement<InputPixelType, InputImageDimension>;
   using TClose = itk::BinaryMorphologicalClosingImageFilter<InputImageType, InputImageType, TKernel>;
   using TClean = itk::CleanSegmentationImageFilter<InputImageType>;
   using TCuberille = itk::CuberilleImageToMeshFilter< InputImageType, OutputMeshType >;
   using TLoop = itk::LoopTriangleCellSubdivisionQuadEdgeMeshFilter<OutputMeshType>;
 
-  using TCGALKernel = CGAL::Simple_cartesian<double>;
-  using TCGALPoint = TCGALKernel::Point_3;
+  using TCGALKernel = CGAL::Simple_cartesian<typename TOutputMesh::PixelType>;
+  using TCGALPoint = typename TCGALKernel::Point_3;
   using TCGALMesh = CGAL::Surface_mesh<TCGALPoint>;
   namespace SMS = CGAL::Surface_mesh_simplification;
-  using TCGALPlacement = SMS::Bounded_normal_change_placement<SMS::Edge_preserving_midpoint_placement<TCGALMesh>>;
+  using TCGALPlacement = SMS::Bounded_normal_change_placement<SMS::Edge_preserving_midpoint_placement<TCGALMesh,typename OutputMeshType::PixelType>>;
 
   TKernel closeKernel;
   closeKernel.SetRadius(this->GetGeneralClosingRadius());
@@ -110,16 +109,10 @@ GenerateInitialModelImageToMeshFilter<TInputImage, TOutputMesh>
   cuberille->SavePixelAsCellDataOn();
   cuberille->Update();
 
-  //
   // CONVERT ITK TO CGAL
-  //
-
   auto surface_mesh = dv::ITKMeshToCGALSurfaceMesh<TOutputMesh, TCGALMesh>( cuberille->GetOutput() );
 
-  //
   // VERIFY AND DECIMATE
-  //
-
   itkAssertOrThrowMacro(CGAL::is_triangle_mesh(surface_mesh), "Input geometry is not triangulated.")
 
   SMS::Count_stop_predicate<TCGALMesh> stop(this->GetNumberOfCellsInDecimatedMesh());
@@ -131,10 +124,7 @@ GenerateInitialModelImageToMeshFilter<TInputImage, TOutputMesh>
 
   surface_mesh.collect_garbage();
 
-  //
   // CONVERT CGAL TO ITK
-  //
-
   const auto o_mesh = dv::CGALSurfaceMeshToITKMesh<TCGALMesh, TOutputMesh>(surface_mesh);
 
   const auto loop = TLoop::New();

@@ -7,7 +7,7 @@
 namespace CGAL {
 namespace Surface_mesh_simplification {
 
-template<class TM_>
+template<class TM_, typename TData>
 class Edge_preserving_midpoint_placement
 {
 public:
@@ -18,7 +18,7 @@ public:
   template <typename Profile>
   boost::optional<typename Profile::Point> operator()(const Profile& profile) const
   {
-    const auto property = std::get<0>(profile.surface_mesh().template property_map<typename Profile::Triangle_mesh::Face_index,float>("f:data"));
+    const auto property = std::get<0>(profile.surface_mesh().template property_map<typename Profile::Triangle_mesh::Face_index,TData>("f:data"));
 
     bool uniform_around_source = true;
 

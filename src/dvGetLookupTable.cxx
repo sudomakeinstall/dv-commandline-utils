@@ -25,7 +25,7 @@ Rainbow()
   vtkSmartPointer<vtkNamedColors> colors =
     vtkSmartPointer<vtkNamedColors>::New();
   lut->SetTableValue(0, colors->GetColor4d("Black").GetData());
-  lut->SetTableValue(1, colors->GetColor4d("Red").GetData());
+  lut->SetTableValue(1, colors->GetColor4d("Crimson").GetData());
   lut->SetTableValue(2, colors->GetColor4d("Orange").GetData());
   lut->SetTableValue(3, colors->GetColor4d("Yellow").GetData());
   lut->SetTableValue(4, colors->GetColor4d("Green").GetData());

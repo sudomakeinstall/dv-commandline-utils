@@ -19,7 +19,7 @@ main(int argc, char* argv[])
     "Filename of input image.")("output-image",
                                 po::value<std::string>()->required(),
                                 "Filename of output image.")(
-    "spacing", po::value<double>(), "Desired spacing.")(
+    "spacing", po::value<double>()->required(), "Desired spacing.")(
     "interpolator",
     po::value<unsigned int>()->default_value(1),
     "Order of BSpline interpolation (0 to 5 allowed).");

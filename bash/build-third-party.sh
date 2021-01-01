@@ -4,18 +4,6 @@ readonly THIRD_PARTY_DIR=${HOME}/Developer/thirdparty
 mkdir -p ${THIRD_PARTY_DIR}
 cd ${THIRD_PARTY_DIR}
 
-## CGAL
-
-rm -rf cgal/
-mkdir -p cgal/bin
-cd cgal
-git clone git@github.com:cgal/cgal.git src
-cd bin
-cmake ../src \
-  -DCMAKE_BUILD_TYPE="RelWithDebInfo"
-cmake --build .
-cd ${THIRD_PARTY_DIR}
-
 ## VTK
 
 rm -rf vtk/

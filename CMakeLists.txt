@@ -16,9 +16,9 @@ cmake_policy(SET CMP0074 NEW)
 
 project("dv-commandline-utils" LANGUAGES CXX C)
 
-set(${PROJECT_NAME}_VERSION_MAJOR "2020")
-set(${PROJECT_NAME}_VERSION_MINOR "12")
-set(${PROJECT_NAME}_VERSION_PATCH "29")
+set(${PROJECT_NAME}_VERSION_MAJOR "2021")
+set(${PROJECT_NAME}_VERSION_MINOR "01")
+set(${PROJECT_NAME}_VERSION_PATCH "01")
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
 
@@ -145,10 +145,6 @@ find_package(VTK
 #               X11Extras)
 #endif()
 
-# CGAL
-
-find_package(CGAL QUIET REQUIRED)
-
 # Eigen
 
 find_package(Eigen3 REQUIRED NO_MODULE)
@@ -180,7 +176,6 @@ target_link_libraries(${PROJECT_NAME}_dependencies INTERFACE
   ${ITK_LIBRARIES}
   ${VTK_LIBRARIES}
   ${PROJECT_NAME}
-  CGAL::CGAL
   Eigen3::Eigen
   )
 

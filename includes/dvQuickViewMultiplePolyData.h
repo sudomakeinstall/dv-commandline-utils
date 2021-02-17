@@ -20,10 +20,7 @@
 namespace dv
 {
 void
-QuickViewMultiplePolyData(std::vector<vtkPolyData*> poly_data_vector, const bool synchronize_cameras = true) {
-
-//  const auto lut = dv::LUT::Rainbow();
-  const auto lut = dv::LUT::SQUEEZ(0, 1);
+QuickViewMultiplePolyData(std::vector<vtkPolyData*> poly_data_vector, const bool synchronize_cameras = true, vtkLookupTable* lut = dv::LUT::Rainbow()) {
 
   size_t N = poly_data_vector.size();
   const double width = 1.0/N;
@@ -40,7 +37,7 @@ QuickViewMultiplePolyData(std::vector<vtkPolyData*> poly_data_vector, const bool
     mapper->SetInputData( poly_data_vector[i] );
     const auto actor = vtkSmartPointer<vtkActor>::New();
     actor->SetMapper(mapper);
-    mapper->SetScalarRange(0, 8);
+    mapper->UseLookupTableScalarRangeOn();
     mapper->SetLookupTable(lut);
     double viewport[4] = {i*width, 0.0, (i+1)*width, 1.0};
     const auto renderer = vtkSmartPointer<vtkRenderer>::New();

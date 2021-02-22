@@ -37,7 +37,7 @@ include(dvPreventInBuildInstalls)
 ## Options ##
 #############
 
-#set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
 #set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 #
 #set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -O0 -fprofile-arcs -ftest-coverage" CACHE STRING "cxx debug compiler flags" FORCE)

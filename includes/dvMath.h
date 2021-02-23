@@ -23,6 +23,16 @@ Clamp(const T& input, const T& lower, const T& upper)
   return std::max(std::min(input, upper), lower);
 }
 
+template<typename TReal>
+constexpr bool
+IsBetween(const TReal &val,
+          const TReal &lower,
+          const TReal &upper,
+          const TReal &epsilon = 10e-9)
+{
+  return !((val < (lower - epsilon)) || (val > (upper + epsilon)));
+}
+
 }
 
 #endif

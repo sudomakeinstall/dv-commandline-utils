@@ -20,8 +20,8 @@ WindowImage(const std::string& IImage,
 {
 
   if (!o_range_exists) {
-    o_range[0] = itk::NumericTraits<TPixel>::min();
-    o_range[1] = itk::NumericTraits<TPixel>::max();
+    o_range[0] = itk::NumericTraits<double>::min();
+    o_range[1] = itk::NumericTraits<double>::max();
   }
 
   using TImage = itk::Image<TPixel, Dimension>;

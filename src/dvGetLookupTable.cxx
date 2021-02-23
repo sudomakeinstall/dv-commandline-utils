@@ -24,9 +24,9 @@ Rainbow()
   vtkSmartPointer<vtkNamedColors> colors =
     vtkSmartPointer<vtkNamedColors>::New();
   lut->SetTableValue(0, 0.0, 0.0, 0.0, 1.0);
-  lut->SetTableValue(1, 1.0, 0.0, 0.0, 1.0);
-  lut->SetTableValue(2, 1.0, 1.0, 0.0, 1.0);
-  lut->SetTableValue(3, 0.5, 1.0, 0.0, 1.0);
+  lut->SetTableValue(1, 1.0, 0.3, 0.3, 1.0);
+  lut->SetTableValue(2, 0.3, 1.0, 0.3, 1.0);
+  lut->SetTableValue(3, 0.3, 0.3, 1.0, 1.0);
   lut->SetTableValue(4, 1.0, 0.0, 1.0, 1.0);
   lut->SetTableValue(5, 1.0, 0.5, 0.0, 1.0);
   lut->SetTableValue(6, 0.0, 0.5, 1.0, 1.0);
@@ -35,6 +35,7 @@ Rainbow()
   lut->SetTableValue(9, 0.5, 0.0, 0.25, 1.0);
 
   const double gray = 0.3;
+  lut->SetTableRange(0, 9);
   lut->SetBelowRangeColor( gray, gray, gray, 1.0 ); // Gray
   lut->SetAboveRangeColor( gray, gray, gray, 1.0 ); // Gray
   lut->UseAboveRangeColorOn();
@@ -59,7 +60,6 @@ SQUEEZ(const double min, const double max, const size_t N)
   ctf->AddRGBPoint(0.5, 1.0, 0.0, 0.0);
   ctf->AddRGBPoint(1.0, 1.0, 1.0, 0.0);
 
-  lut->SetTableRange(min, max);
   lut->Build();
  
   for(size_t i = 0; i < N; ++i)
@@ -70,10 +70,7 @@ SQUEEZ(const double min, const double max, const size_t N)
     }
 
   const double gray = 0.3;
-  lut->SetBelowRangeColor( gray, gray, gray, 1.0 ); // Gray
-  lut->SetAboveRangeColor( gray, gray, gray, 1.0 ); // Gray
-  lut->UseAboveRangeColorOn();
-  lut->UseBelowRangeColorOn();
+  lut->SetTableRange(min, max);
 
   return lut;
 

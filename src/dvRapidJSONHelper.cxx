@@ -1,6 +1,3 @@
-#ifndef dv_RapidJSONHelper_cxx
-#define dv_RapidJSONHelper_cxx
-
 #include <dvRapidJSONHelper.h>
 #include <string>
 
@@ -53,5 +50,3 @@ check_and_set_double_array(const rapidjson::Document& doc,
 };
 
 }
-
-#endif

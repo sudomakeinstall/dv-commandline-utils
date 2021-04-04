@@ -1,4 +1,3 @@
-
 #include <dvReadPolyData.h>
 
 namespace dv

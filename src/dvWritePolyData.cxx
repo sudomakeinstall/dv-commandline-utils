@@ -1,4 +1,3 @@
-
 #include <dvWritePolyData.h>
 
 namespace dv

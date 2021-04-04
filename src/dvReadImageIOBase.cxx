@@ -1,4 +1,3 @@
-
 #include <dvReadImageIOBase.h>
 
 namespace dv {

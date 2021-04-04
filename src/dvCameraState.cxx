@@ -1,6 +1,3 @@
-#ifndef dvCameraState_cxx
-#define dvCameraState_cxx
-
 #include <vtkCamera.h>
 #include <vtkSmartPointer.h>
 
@@ -77,5 +74,3 @@ CameraState::DeserializeJSON(const rapidjson::Document& d)
 }
 
 } // end namespace vtk
-
-#endif

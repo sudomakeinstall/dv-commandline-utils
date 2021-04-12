@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 readonly THIRD_PARTY_DIR=${HOME}/Developer/thirdparty
 mkdir -p ${THIRD_PARTY_DIR}
 cd ${THIRD_PARTY_DIR}

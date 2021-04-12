@@ -49,4 +49,22 @@ check_and_set_double_array(const rapidjson::Document& doc,
   }
 };
 
+void
+serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer> &writer, std::pair<const std::string, unsigned int> &entry) {
+  writer.Key(entry.first.c_str());
+  writer.Uint(entry.second);
+}
+
+void
+serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer> &writer, std::pair<const std::string, double> &entry) {
+  writer.Key(entry.first.c_str());
+  writer.Double(entry.second);
+}
+
+void
+serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer> &writer, std::pair<const std::string, bool> &entry) {
+  writer.Key(entry.first.c_str());
+  writer.Bool(entry.second);
+}
+
 }

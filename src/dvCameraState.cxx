@@ -29,7 +29,25 @@ CameraState ::RestoreState(vtkCamera* const camera) const
 }
 
 void
-CameraState ::SerializeJSON(
+CameraState
+::SerializeJSON(const std::string &fileName) {
+
+  rapidjson::StringBuffer sb;
+  rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+  writer.StartObject();
+  this->SerializeJSON(writer);
+  writer.EndObject();
+
+  std::ofstream fileStream;
+  fileStream.open(fileName);
+  fileStream << sb.GetString();
+  fileStream.close();
+
+}
+
+void
+CameraState
+::SerializeJSON(
   rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
 {
   writer.Key("camera.ViewAngle");
@@ -61,7 +79,24 @@ CameraState ::SerializeJSON(
 }
 
 void
-CameraState::DeserializeJSON(const rapidjson::Document& d)
+CameraState
+::DeserializeJSON(const std::string &fileName)
+{
+      std::ifstream fileStream;
+      fileStream.open(fileName);
+      std::stringstream buffer;
+      buffer << fileStream.rdbuf();
+      fileStream.close();
+
+      rapidjson::Document d;
+      d.Parse(buffer.str().c_str());
+
+      this->DeserializeJSON(d);
+}
+
+void
+CameraState
+::DeserializeJSON(const rapidjson::Document& d)
 {
   check_and_set_double(d, this->ViewAngle, "camera.ViewAngle");
   check_and_set_double(d, this->ParallelScale, "camera.ParallelScale");

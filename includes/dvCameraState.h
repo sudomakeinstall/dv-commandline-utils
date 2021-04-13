@@ -21,7 +21,11 @@ public:
 
   void CaptureState(vtkCamera* const camera);
   void RestoreState(vtkCamera* const camera) const;
+
+  void SerializeJSON(const std::string &fileName);
   void SerializeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer);
+
+  void DeserializeJSON(const std::string &fileName);
   void DeserializeJSON(const rapidjson::Document& d);
 
 }; // end class

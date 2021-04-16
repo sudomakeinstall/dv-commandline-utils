@@ -4,6 +4,8 @@
 #include <dvCameraState.h>
 #include <dvRapidJSONHelper.h>
 
+#include <sstream>
+
 namespace dv {
 
 void

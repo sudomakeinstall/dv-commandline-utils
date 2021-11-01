@@ -8,17 +8,16 @@ cd ${THIRD_PARTY_DIR}
 
 ## VTK
 
-rm -rf vtk/
+#rm -rf vtk/
 mkdir -p vtk/bin
 cd vtk
-git clone git@github.com:Kitware/vtk.git src
+#git clone git@github.com:Kitware/vtk.git src
 cd bin
 cmake ../src \
   -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
   -DBUILD_SHARED_LIBS=OFF \
   -DVTK_BUILD_EXAMPLES=OFF \
-  -DVTK_BUILD_TESTING=OFF \
-  -DVTK_GROUP_ENABLE_Qt=YES
+  -DVTK_BUILD_TESTING=OFF
 cmake --build .
 cd ${THIRD_PARTY_DIR}
 

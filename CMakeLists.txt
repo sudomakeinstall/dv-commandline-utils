@@ -160,6 +160,8 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
   )
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${RapidJSON_INCLUDE_DIRS})
 
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIR})
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
   ${ITK_LIBRARIES}
   ${VTK_LIBRARIES}

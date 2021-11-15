@@ -12,7 +12,8 @@ template<unsigned int Dimension, typename TPixel>
 void
 BinaryClosing(const std::string& IImage,
               const std::string& OImage,
-              const unsigned int radius)
+              const unsigned int radius,
+              const unsigned int foreground)
 {
   typedef itk::Image<TPixel, Dimension> TImage;
   typedef itk::ImageFileReader<TImage> TReader;
@@ -31,7 +32,7 @@ BinaryClosing(const std::string& IImage,
   const auto closingFilter = TOpen::New();
   closingFilter->SetInput(reader->GetOutput());
   closingFilter->SetKernel(structuringElement);
-  closingFilter->SetForegroundValue(1);
+  closingFilter->SetForegroundValue(foreground);
 
   const auto writer = TWriter::New();
   writer->SetFileName(OImage);

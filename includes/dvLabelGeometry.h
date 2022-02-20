@@ -34,6 +34,9 @@ LabelGeometry(const std::string& IImage)
   filter->SetInput(reader->GetOutput());
   filter->Update();
 
+  const auto spacing = reader->GetOutput()->GetSpacing();
+  const auto p = std::accumulate(spacing.cbegin(), spacing.cend(), 1.0, std::multiplies<double>{});
+
   //
   // Calculate Label Stats
   //
@@ -41,17 +44,18 @@ LabelGeometry(const std::string& IImage)
   const auto labels = dv::ImageToSet<Dimension, TPixel>(reader->GetOutput());
 
   for (const auto& l : labels) {
-    itk::ContinuousIndex<double, 3> index;
+    itk::ContinuousIndex<double, Dimension> index;
     const auto indexCentroid = filter->GetCentroid(l);
-    index[0] = indexCentroid[0];
-    index[1] = indexCentroid[1];
-    index[2] = indexCentroid[2];
+    for (size_t i = 0; i < Dimension; ++i) {
+      index[i] = indexCentroid[i];
+    }
 
     typename TImage::PointType centroid;
     reader->GetOutput()->TransformContinuousIndexToPhysicalPoint(index,
                                                                  centroid);
 
-    std::cout << "Volume," << static_cast<int>(l) << ',' << filter->GetVolume(l)
+    // Convert number of pixels to mL
+    std::cout << "Volume," << static_cast<int>(l) << ',' << p*filter->GetVolume(l)/1000.0
               << std::endl;
     std::cout << "CentroidX," << static_cast<int>(l) << ',' << centroid[0]
               << std::endl;

@@ -10,6 +10,7 @@ namespace po = boost::program_options;
 #include <itkSimplexMesh.h>
 #include <itkSimplexMeshVolumeCalculator.h>
 #include <itkTriangleMeshToSimplexMeshFilter.h>
+#include <itkTriangleHelper.h>
 
 // Typedefs
 using TMesh = itk::Mesh<float, 3>;
@@ -17,6 +18,8 @@ using TSimplex = itk::SimplexMesh<float, 3>;
 using TReader = itk::MeshFileReader<TMesh>;
 using TConvert = itk::TriangleMeshToSimplexMeshFilter<TMesh, TSimplex>;
 using TVolume = itk::SimplexMeshVolumeCalculator<TSimplex>;
+using TPoint = TMesh::PointType;
+using TTriangleHelper = itk::TriangleHelper<TPoint>;
 
 int
 main(int argc, char** argv)
@@ -39,7 +42,6 @@ main(int argc, char** argv)
 
   po::notify(vm);
 
-  // Create a spherical mesh with known radius and resolution.
   const auto reader = TReader::New();
   reader->SetFileName(vm["input-mesh"].as<std::string>());
   reader->Update();
@@ -48,6 +50,8 @@ main(int argc, char** argv)
             << std::endl;
   std::cout << "Cells: " << reader->GetOutput()->GetNumberOfCells()
             << std::endl;
+
+  std::map<int, double> area_map;
 
   // Ensure that all cells of the mesh are triangles.
   for (TMesh::CellsContainerIterator it =
@@ -60,6 +64,12 @@ main(int argc, char** argv)
       std::cerr << "ERROR: All cells must be trianglar." << std::endl;
       return EXIT_FAILURE;
     }
+
+    const auto p0 = reader->GetOutput()->GetPoints()->ElementAt(cell->GetPointIds()[0]);
+    const auto p1 = reader->GetOutput()->GetPoints()->ElementAt(cell->GetPointIds()[1]);
+    const auto p2 = reader->GetOutput()->GetPoints()->ElementAt(cell->GetPointIds()[2]);
+    area_map[reader->GetOutput()->GetCellData()->ElementAt(it->Index())] = TTriangleHelper::ComputeArea(p0, p1, p2);
+
   }
 
   // Convert the triangle mesh to a simplex mesh.
@@ -75,6 +85,10 @@ main(int argc, char** argv)
   // Compare with the volume and area of an ideal sphere.
   std::cout << "Volume: " << volume->GetVolume() << std::endl;
   std::cout << "Surface Area: " << volume->GetArea() << std::endl;
+
+  for (const auto x : area_map) {
+    std::cout << "Surface Area " << x.first << ": " << x.second << std::endl;
+  }
 
   return EXIT_SUCCESS;
 }

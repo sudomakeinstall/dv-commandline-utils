@@ -17,25 +17,26 @@ using TCoordinate = float;
 
 using TReader = vtkSmartPointer<vtkPolyDataReader>;
 using TQuality = vtkSmartPointer<vtkMeshQuality>;
+using TMetric = vtkMeshQuality::QualityMeasureTypes;
 
 int
 main(int argc, char** argv)
 {
 
   std::map<int, std::string> quality_map;
-  quality_map[VTK_QUALITY_AREA] = "TriangleArea";
-  quality_map[VTK_QUALITY_RADIUS_RATIO] = "TriangleRadiusRatio";
-  quality_map[VTK_QUALITY_ASPECT_RATIO] = "TriangleAspectRatio";
-  quality_map[VTK_QUALITY_ASPECT_FROBENIUS] = "TriangleAspectFrobenius";
-  quality_map[VTK_QUALITY_EDGE_RATIO] = "TriangleEdgeRatio";
-  quality_map[VTK_QUALITY_MIN_ANGLE] = "TriangleMinAngle";
-  quality_map[VTK_QUALITY_MAX_ANGLE] = "TriangleMaxAngle";
-  quality_map[VTK_QUALITY_CONDITION] = "TriangleCondition";
-  quality_map[VTK_QUALITY_SCALED_JACOBIAN] = "TriangleScaledJacobian";
-  quality_map[VTK_QUALITY_RELATIVE_SIZE_SQUARED] = "TriangleRelativeSizeSquared";
-  quality_map[VTK_QUALITY_SHAPE] = "TriangleShape";
-  quality_map[VTK_QUALITY_SHAPE_AND_SIZE] = "TriangleShapeAndSize";
-  quality_map[VTK_QUALITY_DISTORTION] = "TriangleDistortion";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::AREA)] = "TriangleArea";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::RADIUS_RATIO)] = "TriangleRadiusRatio";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::ASPECT_RATIO)] = "TriangleAspectRatio";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::ASPECT_FROBENIUS)] = "TriangleAspectFrobenius";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::EDGE_RATIO)] = "TriangleEdgeRatio";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::MIN_ANGLE)] = "TriangleMinAngle";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::MAX_ANGLE)] = "TriangleMaxAngle";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::CONDITION)] = "TriangleCondition";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::SCALED_JACOBIAN)] = "TriangleScaledJacobian";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::RELATIVE_SIZE_SQUARED)] = "TriangleRelativeSizeSquared";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::SHAPE)] = "TriangleShape";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::SHAPE_AND_SIZE)] = "TriangleShapeAndSize";
+  quality_map[static_cast<std::underlying_type_t<TMetric>>(TMetric::DISTORTION)] = "TriangleDistortion";
 
   std::string metric_description =
     "Integer corresponding to the quality metric.\n";
@@ -49,7 +50,7 @@ main(int argc, char** argv)
   description.add_options()
     ("help", "Print usage information.")
     ("input-mesh", po::value<std::string>()->required(), "Filename of the input mesh.")
-    ("metric", po::value<int>()->default_value(VTK_QUALITY_RADIUS_RATIO), metric_description.c_str())
+    ("metric", po::value<int>()->default_value(static_cast<std::underlying_type_t<TMetric>>(TMetric::RADIUS_RATIO)), metric_description.c_str())
     ("summary", "Print summary.")
     ("summary-hide-header", "Hide the summary header.")
     ("cellwise", "Print cellwise data.")

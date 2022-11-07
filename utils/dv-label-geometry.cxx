@@ -31,6 +31,14 @@ main(int argc, char** argv)
   const std::string IImage(vm["input-image"].as<std::string>());
 
   switch (dv::ReadImageIOBase(IImage)->GetComponentType()) {
+    case itk::ImageIOBase::DOUBLE: {
+      dv::LabelGeometry<3, double>(IImage);
+      break;
+    }
+    case itk::ImageIOBase::FLOAT: {
+      dv::LabelGeometry<3, float>(IImage);
+      break;
+    }
     case itk::ImageIOBase::UCHAR: {
       dv::LabelGeometry<3, unsigned char>(IImage);
       break;

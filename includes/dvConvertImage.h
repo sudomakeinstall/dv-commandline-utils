@@ -22,6 +22,7 @@ ConvertImage(const std::string& IImage, const std::string& OImage)
   const auto writer = TWriter::New();
   writer->SetInput(reader->GetOutput());
   writer->SetFileName(OImage);
+  writer->UseCompressionOn();
   writer->Update();
 }
 
